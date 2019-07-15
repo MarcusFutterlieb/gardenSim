@@ -6,13 +6,16 @@ Created on Mon Jul 15
 
 """
 
-import sched, time, random, math, csv
+import sched, time, random, math, csv, pandas
+#import for plot
+import matplotlib
+import matplotlib.pyplot as plt
 
 #setup variables###############################################################
 ###############################################################################
 s                                       = sched.scheduler(time.time, time.sleep)
-sleepTime                               = 0.000001;
-environmenStopCondition                 = 999;
+sleepTime                               = 0.0001;
+environmenStopCondition                 = 1000;
 schedCounter                            = 1;
 batteryLevel                            = 100;
 moistureLevel                           = 100;
@@ -42,7 +45,7 @@ def environModel(sc,schedCounter,batteryLevel,moistureLevel,averageTemperature,m
         #print("day time")
         averageTemperature = (averageTemperature + random.randint(22,35))*0.5;
         #set solar power generation
-        #batteryLevel += random.randint(10,maxSolarPowerForBatteryGeneration);
+        batteryLevel += random.randint(10,maxSolarPowerForBatteryGeneration);
     else:
         #print("night time")   
         averageTemperature = (averageTemperature + random.randint(10,18))*0.5;
@@ -89,7 +92,7 @@ def environModel(sc,schedCounter,batteryLevel,moistureLevel,averageTemperature,m
     if (schedCounter<environmenStopCondition) and (batteryLevel>5):
         s.enter(sleepTime, 1, environModel, (sc,schedCounter,batteryLevel,moistureLevel,averageTemperature,maxSolarPowerForBatteryGeneration));
     else:
-        print('end');
+        print('Environment: End of simulation');
 
    
         
@@ -98,3 +101,40 @@ def environModel(sc,schedCounter,batteryLevel,moistureLevel,averageTemperature,m
 ###############################################################################
 s.enter(sleepTime, 1, environModel, (s,schedCounter,batteryLevel,moistureLevel,averageTemperature,maxSolarPowerForBatteryGeneration));
 s.run();
+
+#analysis #####################################################################
+###############################################################################
+
+logData = pandas.read_csv('log.csv');
+timeColumn = logData['schedCounter'];
+
+batteryLevelColumn = logData['batteryLevel'];
+fig, ax = plt.subplots()
+ax.plot(timeColumn, batteryLevelColumn)
+ax.set(xlabel='time (h)', ylabel='charge (%)',
+       title='Battery level over time')
+ax.grid()
+fig.savefig("batteryLvl.png")
+plt.show()
+
+
+
+moistureLevelColumn = logData['moistureLevel'];
+fig, ax = plt.subplots()
+ax.plot(timeColumn, moistureLevelColumn)
+ax.set(xlabel='time (h)', ylabel='moisture (%)',
+       title='Moisture level over time')
+ax.grid()
+fig.savefig("moistureLvl.png")
+plt.show()
+
+
+
+temperatureColumn = logData['averageTemperature'];
+fig, ax = plt.subplots()
+ax.plot(timeColumn, temperatureColumn)
+ax.set(xlabel='time (h)', ylabel='temperature (°C)',
+       title='Average temperature over time')
+ax.grid()
+fig.savefig("temperatureLvl.png")
+plt.show()
