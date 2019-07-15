@@ -1,22 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """
-
 Created on Mon Jul 15
-
- 
-
 @author: Marcus Futterlieb
 
 """
-
- 
 
 import sched, time, random, math, csv
 
 #setup variables###############################################################
 ###############################################################################
-
 s                                       = sched.scheduler(time.time, time.sleep)
 sleepTime                               = 0.000001;
 environmenStopCondition                 = 999;
@@ -38,7 +31,6 @@ with open('log.csv', 'w') as csvfile:
 
 #function definitions##########################################################
 ###############################################################################
-
 def sigmoid(x):
     return 1 / (1 + math.e ** -x)
 
@@ -68,21 +60,13 @@ def environModel(sc,schedCounter,batteryLevel,moistureLevel,averageTemperature,m
         if batteryLevel>100:
             batteryLevel=100;
 
- 
-
-          
-
     print ("the environment after",days, "day and ",(partialDays), "hours is now being simulasted ...");
     print ("battery level is ", batteryLevel);
-
     #print ("it is ", averageTemperature,"degrees");
-
     #print ("moisture level ", moistureLevel);
-
     #print ("the sigmoid(temperature) is",sigmoid(averageTemperature-15));
 
    
-
     #Raspberry Pi functions
     if moistureLevel<30:
         moistureLevel += 30;
@@ -96,9 +80,9 @@ def environModel(sc,schedCounter,batteryLevel,moistureLevel,averageTemperature,m
     toStore = [schedCounter,days, partialDays, batteryLevel, averageTemperature, moistureLevel ];
     #storing information
     with open('log.csv','a') as csvfile:
-        csvfile.write(",".join(toStore));
-
-       
+        wr = csv.writer(csvfile, dialect='excel')
+        wr.writerow(toStore)
+        #csvfile.write(",".join(toStore));
 
     schedCounter+=1;
     #stop condition test
@@ -108,9 +92,6 @@ def environModel(sc,schedCounter,batteryLevel,moistureLevel,averageTemperature,m
         print('end');
 
    
-
-        
-
         
 
 #main function#################################################################
